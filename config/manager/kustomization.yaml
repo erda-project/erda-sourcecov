@@ -13,4 +13,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: registry.cn-hangzhou.aliyuncs.com/rqking-public/erda-sourcecov
-  newTag: 1.0.11
+  newTag: 0.1.0
