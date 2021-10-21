@@ -1,0 +1,256 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "sourcecov.erda.cloud/v1alpha1",
+          "kind": "Agent",
+          "metadata": {
+            "name": "agent-sample"
+          },
+          "spec": {
+            "env": [
+              {
+                "name": "KEY",
+                "value": "value"
+              }
+            ],
+            "image": "nginx:stable",
+            "resources": {
+              "limits": {
+                "cpu": "0.1",
+                "memory": "256Mi"
+              },
+              "requests": {
+                "cpu": "0.1",
+                "memory": "256Mi"
+              }
+            },
+            "storageClassName": "alicloud-disk-efficiency",
+            "storageSize": "20Gi"
+          }
+        }
+      ]
+    capabilities: Basic Install
+    operators.operatorframework.io/builder: operator-sdk-v1.13.0
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+  name: sourcecov.v0.0.1
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Agent is the Schema for the agents API
+      displayName: Agent
+      kind: Agent
+      name: agents.sourcecov.erda.cloud
+      version: v1alpha1
+  description: E2E code coverage collector
+  displayName: Sourcecov
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - apps
+          resources:
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - statefulsets/status
+          verbs:
+          - get
+          - patch
+          - update
+        - apiGroups:
+          - ""
+          resources:
+          - pods
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - pods/exec
+          verbs:
+          - create
+        - apiGroups:
+          - ""
+          resources:
+          - serviceaccounts
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - rolebindings
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - roles
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - sourcecov.erda.cloud
+          resources:
+          - agents
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - sourcecov.erda.cloud
+          resources:
+          - agents/finalizers
+          verbs:
+          - update
+        - apiGroups:
+          - sourcecov.erda.cloud
+          resources:
+          - agents/status
+          verbs:
+          - get
+          - patch
+          - update
+        serviceAccountName: sourcecov-controller-manager
+      deployments:
+      - name: sourcecov-controller-manager
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              control-plane: sourcecov-controller-manager
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                control-plane: sourcecov-controller-manager
+            spec:
+              containers:
+              - args:
+                - --leader-elect
+                command:
+                - /manager
+                image: controller:latest
+                livenessProbe:
+                  httpGet:
+                    path: /healthz
+                    port: 8081
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                name: manager
+                readinessProbe:
+                  httpGet:
+                    path: /readyz
+                    port: 8081
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                resources:
+                  limits:
+                    cpu: 200m
+                    memory: 100Mi
+                  requests:
+                    cpu: 100m
+                    memory: 20Mi
+                securityContext:
+                  allowPrivilegeEscalation: false
+              securityContext:
+                runAsNonRoot: true
+              serviceAccountName: sourcecov-controller-manager
+              terminationGracePeriodSeconds: 10
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - coordination.k8s.io
+          resources:
+          - leases
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - create
+          - patch
+        serviceAccountName: sourcecov-controller-manager
+    strategy: deployment
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - test
+  links:
+  - name: Sourcecov
+    url: https://sourcecov.domain
+  maintainers:
+  - email: hoozecn@gmail.com
+    name: Jeremy
+  maturity: alpha
+  provider:
+    name: Erda
+  version: 0.0.1

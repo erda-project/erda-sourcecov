@@ -1,0 +1,47 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: sourcecov.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Agent is the Schema for the agents API
+      displayName: Agent
+      kind: Agent
+      name: agents.sourcecov.erda.cloud
+      version: v1alpha1
+  description: E2E code coverage collector
+  displayName: Sourcecov
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - test
+  links:
+  - name: Sourcecov
+    url: https://sourcecov.domain
+  maintainers:
+  - email: hoozecn@gmail.com
+    name: Jeremy
+  maturity: alpha
+  provider:
+    name: Erda
+  version: 0.0.0
