@@ -41,6 +41,8 @@ type AgentReconciler struct {
 //+kubebuilder:rbac:groups=sourcecov.erda.cloud,resources=agents,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=sourcecov.erda.cloud,resources=agents/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=sourcecov.erda.cloud,resources=agents/finalizers,verbs=update
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=apps,resources=statefulsets,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=apps,resources=statefulsets/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=roles,verbs=get;list;watch;create;update;patch;delete

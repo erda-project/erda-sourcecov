@@ -76,6 +76,16 @@ func convertRole(app *appv1.Agent, setOwnerRef SetOwnerRefFunc) *rbacv1.Role {
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
+				APIGroups: []string{"apps"},
+				Resources: []string{"deployments"},
+				Verbs:     []string{"get", "watch", "list"},
+			},
+			{
+				APIGroups: []string{"apps"},
+				Resources: []string{"statefulsets"},
+				Verbs:     []string{"get", "watch", "list"},
+			},
+			{
 				APIGroups: []string{""},
 				Resources: []string{"pods"},
 				Verbs:     []string{"get", "watch", "list"},
