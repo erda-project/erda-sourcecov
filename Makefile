@@ -122,7 +122,7 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 
 .PHONY: print-manifests
 print-manifests: manifests kustomize
-	@cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG} 1>&2
+	@[ "${IMG}" != "controller:latest" ] && cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG} 1>&2 || :
 	@$(KUSTOMIZE) build config/default
 
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config.
