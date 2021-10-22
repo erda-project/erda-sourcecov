@@ -126,6 +126,8 @@ func convertRoleBinding(app *appv1.Agent, setOwnerRef SetOwnerRefFunc) *rbacv1.R
 	return roleBinding
 }
 
+const volumeName = "data"
+
 func convertSts(app *appv1.Agent, setOwnerRef SetOwnerRefFunc) *appsv1.StatefulSet {
 	var replicas int32 = 1
 	labels := getLables(app)
@@ -136,7 +138,7 @@ func convertSts(app *appv1.Agent, setOwnerRef SetOwnerRefFunc) *appsv1.StatefulS
 	var vct []corev1.PersistentVolumeClaim
 	vct = append(vct, corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: app.Name,
+			Name: volumeName,
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
 			StorageClassName: &app.Spec.StorageClassName,
@@ -203,7 +205,7 @@ func newContainers(app *appv1.Agent) []corev1.Container {
 	var volumeMounts []corev1.VolumeMount
 
 	volumeMounts = append(volumeMounts, corev1.VolumeMount{
-		Name:      app.Name,
+		Name:      volumeName,
 		MountPath: app.Spec.VolumePath,
 		ReadOnly:  false,
 	})

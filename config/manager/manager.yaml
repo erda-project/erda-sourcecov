@@ -22,6 +22,19 @@ spec:
       labels:
         control-plane: sourcecov-controller-manager
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: dice/locked
+                operator: DoesNotExist
+              - key: dice/location
+                operator: DoesNotExist
+              - key: dice/platform
+                operator: Exists
+              - key: dice/stateless-service
+                operator: Exists
       securityContext:
         runAsNonRoot: true
       containers:
