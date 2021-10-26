@@ -1,5 +1,3 @@
-# syntax = docker/dockerfile:1.2
-
 # docker build -t registry.cn-hangzhou.aliyuncs.com/dice/dop:1.3-jacoco-server-11 .
 FROM zhmpidnm.mirror.aliyuncs.com/library/golang:1.16 as builder
 
@@ -7,7 +5,7 @@ COPY . /app/jacoco
 WORKDIR /app/jacoco
 
 # go build
-RUN --mount=type=cache,target=/go/pkg/mod GOOS=linux GOARCH=amd64 go build -o /app/run /app/jacoco/cmd/main.go
+RUN GOOS=linux GOARCH=amd64 go build -o /app/run /app/jacoco/cmd/main.go
 
 FROM registry.erda.cloud/erda/terminus-openjdk:v11.0.6
 
