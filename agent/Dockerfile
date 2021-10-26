@@ -1,5 +1,5 @@
 # docker build -t registry.cn-hangzhou.aliyuncs.com/dice/dop:1.3-jacoco-server-11 .
-FROM zhmpidnm.mirror.aliyuncs.com/library/golang:1.16 as builder
+FROM 5ztu93te.mirror.aliyuncs.com/library/golang:1.16 as builder
 
 COPY . /app/jacoco
 WORKDIR /app/jacoco
