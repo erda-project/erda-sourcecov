@@ -290,29 +290,38 @@ func buildCallbackErrorMessage(planID uint64) string {
 		msg += job.ErrorMsg + "\n"
 	}
 
-	var servicesMessage = ""
+	var allMessage = ""
 	Services.Range(func(key, value interface{}) bool {
 		svc, ok := GetService(key.(string))
 		if !ok {
 			return true
 		}
 
-		servicesMessage += fmt.Sprintf("svc %v error message \n", svc.Name)
+		var servicesMessage = ""
 		if svc.ErrorMessage != "" {
 			servicesMessage += svc.ErrorMessage + "\n"
 		}
 
-		servicesMessage += fmt.Sprintf("svc %v pod error message \n", svc.Name)
+		var podErrorMessage = ""
 		for _, pod := range svc.Pods {
 			if pod.ErrorMsg != "" {
-				servicesMessage += pod.ErrorMsg + "\n"
+				podErrorMessage += pod.ErrorMsg + "\n"
 			}
 		}
+
+		if servicesMessage != "" {
+			servicesMessage = fmt.Sprintf("svc %v error message \n", svc.Name) + servicesMessage
+		}
+		if podErrorMessage != "" {
+			podErrorMessage = fmt.Sprintf("svc %v pod error message \n", svc.Name) + podErrorMessage
+		}
+
+		allMessage = allMessage + servicesMessage + podErrorMessage
 		return true
 	})
 
-	if servicesMessage != "" {
-		msg += servicesMessage + "\n"
+	if allMessage != "" {
+		msg += allMessage + "\n"
 	}
 
 	if len(msg) > 1500 {
