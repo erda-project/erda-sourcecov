@@ -308,7 +308,7 @@ func uploadFile(erdaAddr string, token string, planID uint64, projectID uint64, 
 		Post(erdaAddr).
 		Path("/api/files").
 		Param("fileFrom", fmt.Sprintf("jacoco-upload-%d-%d", planID, projectID)).
-		Param("expiredIn", "168h").
+		Param("expiredIn", "4320h").
 		Header("Authorization", token).
 		MultipartFormDataBody(multiparts).
 		Do().JSON(&uploadResp)
