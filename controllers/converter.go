@@ -27,6 +27,9 @@ import (
 	appv1 "github.com/erda-project/erda-sourcecov/api/v1alpha1"
 )
 
+const(
+	CSISnapshotMaxHistory     = "pvc.erda.io/snapshot"
+)
 type AgentResources struct {
 	StatefulSet    *appsv1.StatefulSet
 	ServiceAccount *corev1.ServiceAccount
@@ -135,10 +138,34 @@ func convertSts(app *appv1.Agent, setOwnerRef SetOwnerRefFunc) *appsv1.StatefulS
 	svcAccountName := getNamePrefix(app) + "-sa"
 	selector := &metav1.LabelSelector{MatchLabels: labels}
 
+	for lk, lv := range app.Labels {
+		labels[lk] = lv
+	}
+
+	for lk, lv := range app.Spec.Labels {
+		labels[lk] = lv
+	}
+
+	pvcAnnotations := make(map[string]string)
+	for ak, av := range app.Annotations {
+		if ak == CSISnapshotMaxHistory {
+			pvcAnnotations[ak] = av
+			delete(app.Annotations, ak)
+		}
+	}
+
+	for ak, av := range app.Spec.Annotations {
+		if ak == CSISnapshotMaxHistory {
+			pvcAnnotations[ak] = av
+			delete(app.Spec.Annotations, ak)
+		}
+	}
+
 	var vct []corev1.PersistentVolumeClaim
 	vct = append(vct, corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: volumeName,
+			Annotations: pvcAnnotations,
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
 			StorageClassName: &app.Spec.StorageClassName,
