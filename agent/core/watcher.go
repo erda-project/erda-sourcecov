@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -345,34 +344,18 @@ func getServiceJarPackage(svc *Service) ([]string, error) {
 		log.Errorf("get pod jar path %v error %v", "/app", err)
 		return nil, err
 	}
-
-	files, err := ioutil.ReadDir(fmt.Sprintf("%v/app", imageJarTempPath))
+	var jarAddrList []string
+	err = filepath.Walk(imageJarTempPath+"/app", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		if !info.IsDir() && strings.HasSuffix(path, ".jar") {
+			jarAddrList = append(jarAddrList, path)
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, err
-	}
-
-	var jarAddrList []string
-	for _, fi := range files {
-		if fi.IsDir() {
-			dirFiles, err := ioutil.ReadDir(fmt.Sprintf("%v/app/%v", imageJarTempPath, fi.Name()))
-			if err != nil {
-				continue
-			}
-			for _, dirFi := range dirFiles {
-				if strings.HasSuffix(dirFi.Name(), ".jar") {
-
-					jarAddr := fmt.Sprintf("%v/app/%v/%v", imageJarTempPath, fi.Name(), dirFi.Name())
-
-					jarAddrList = append(jarAddrList, jarAddr)
-				}
-			}
-		} else {
-			if strings.HasSuffix(fi.Name(), ".jar") {
-
-				jarAddr := fmt.Sprintf("%v/app/%v", imageJarTempPath, fi.Name())
-				jarAddrList = append(jarAddrList, jarAddr)
-			}
-		}
 	}
 
 	return jarAddrList, nil
