@@ -25,7 +25,6 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/remotecommand"
 	"k8s.io/client-go/util/retry"
-	cmdutil "k8s.io/kubectl/pkg/cmd/util"
 
 	"github.com/erda-project/erda-sourcecov/agent/conf"
 )
@@ -396,9 +395,11 @@ func copyFromPod(podName string, srcPath string, destPath string) error {
 			Stderr: os.Stderr,
 			Tty:    false,
 		})
-		cmdutil.CheckErr(err)
 	}()
 	wait.Wait()
+	if err != nil {
+		return err
+	}
 
 	prefix := getPrefix(srcPath)
 	prefix = path.Clean(prefix)
