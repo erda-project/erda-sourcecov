@@ -151,7 +151,7 @@ func (r *AgentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (resu
 		return
 	}
 
-	// deployment 存在，更新
+	// statefulset existed, do update
 	oldSpec := appv1.AgentSpec{}
 	if err = json.Unmarshal([]byte(agent.Annotations["spec"]), &oldSpec); err != nil {
 		err = errorx.WithStack(err)
@@ -215,7 +215,7 @@ func (r *AgentReconciler) UpdateResource(ctx context.Context, oldDeploy *appsv1.
 		return
 	}
 
-	// 更新deployment
+	// update statefulset
 	newDeploy := resources.StatefulSet
 	oldDeploy.Spec = newDeploy.Spec
 	if err = r.Client.Update(ctx, oldDeploy); err != nil {
