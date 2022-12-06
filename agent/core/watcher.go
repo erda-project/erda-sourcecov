@@ -125,6 +125,16 @@ func WatchJacocoPod(ctx context.Context) {
 			return
 		}
 
+		// preload all services at initialization
+		for i := range list.Items {
+			newServices := getServiceByDeploy(ctx, &list.Items[i])
+			if newServices != nil {
+				log.Infof("preload service %v", *newServices)
+			}
+			saveServices(newServices, true)
+		}
+		WhenStartLoadAllDeploymentLock.Unlock()
+
 		deployListNum = len(list.Items)
 
 		watchlist := cache.NewListWatchFromClient(
@@ -148,9 +158,6 @@ func WatchJacocoPod(ctx context.Context) {
 						}
 
 						watchListDeployLoadDoneNum++
-						if watchListDeployLoadDoneNum == deployListNum {
-							WhenStartLoadAllDeploymentLock.Unlock()
-						}
 					} else {
 						watchListDeployLoadDoneNum++
 						log.Errorf("not a v1.Deployment type")

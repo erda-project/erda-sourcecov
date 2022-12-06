@@ -167,7 +167,7 @@ func schedulingJob(planID uint64) {
 		select {
 		case <-job.ctx.Done():
 			return
-		case <-time.After(30 * time.Minute):
+		case <-time.After(5 * time.Minute):
 			dumpExec(planID)
 			loopTimes++
 			if loopTimes > 10 {
@@ -413,6 +413,7 @@ func dumpExec(planID uint64) {
 					log.Errorf("create svc %v temp error %v", svc.Name, err)
 					return
 				}
+				log.Infof("begin dump execinfo for pods: %v", svc.Pods)
 
 				var podExecList []string
 				var podErrorMap = map[string]string{}
@@ -425,7 +426,7 @@ func dumpExec(planID uint64) {
 					conn, err := net.DialTimeout("tcp", pod.Addr+":6300", 5*time.Second)
 					if err != nil {
 						podErrorMap[pod.Addr] = fmt.Sprintf("svc %v container %v fail to dial error %v", svc.Name, pod.Addr, err)
-						return
+						continue
 					}
 					conn.Close()
 
